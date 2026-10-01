@@ -22,9 +22,11 @@ jobs:
       - run: uv run pytest -q
 
   # Как в референсе: после зелёных тестов на main — выкладка на VM по SSH и перезапуск сервиса.
+  # Включается переменной репозитория DEPLOY_ENABLED=true вместе с секретами VM_HOST,
+  # VM_USER, VM_SSH_KEY: без сервера шаг выката падал бы на каждом push.
   deploy:
     needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-latest
     environment: production
     steps:
