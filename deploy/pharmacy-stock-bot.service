@@ -1,0 +1,22 @@
+# systemd-юнит для VM: sudo cp deploy/pharmacy-stock-bot.service /etc/systemd/system/
+#                      sudo systemctl enable --now pharmacy-stock-bot
+[Unit]
+Description=Telegram-бот аптечной сети: неликвид и сроки годности
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pharmacybot
+WorkingDirectory=/opt/pharmacy-stock-bot
+EnvironmentFile=/opt/pharmacy-stock-bot/.env
+ExecStart=/opt/pharmacy-stock-bot/.venv/bin/python -m pharmacy_bot
+Restart=on-failure
+RestartSec=10
+# Бот пишет только в свою папку с данными и логами
+ProtectSystem=strict
+ReadWritePaths=/opt/pharmacy-stock-bot/data /opt/pharmacy-stock-bot/logs
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
